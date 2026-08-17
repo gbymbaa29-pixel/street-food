@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Street Food">
+<link rel="manifest" href="manifest.json">
+<title>Street Food</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{background:#111827;color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 16px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:21px}header small{opacity:.7}
+main{padding:12px;max-width:760px;margin:auto}
+.card{background:#fff;border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 2px 12px #0000000c}
+h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:15px 0 10px}
+input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-size:16px}
+.foods{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.food{border:1px solid #d1d5db;background:#fff;border-radius:12px;padding:12px;text-align:left;min-height:68px;cursor:pointer}
+.food:active{transform:scale(.98)}
+.food b{display:block;font-size:14px}.food span{display:block;margin-top:5px;color:#4b5563;font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee}
+.row button{border:0;border-radius:7px;padding:5px 10px;cursor:pointer}
+.total{display:flex;justify-content:space-between;font-size:21px;font-weight:800;padding:14px 0}
+.save{width:100%;padding:14px;border:0;border-radius:12px;background:#111827;color:#fff;font-weight:800;font-size:16px;cursor:pointer}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:11px;font-size:13px}
+.stat b{display:block;font-size:18px;margin-top:3px}
+.report-title{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.date{font-size:13px;color:#6b7280}
+.food-stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
+.food-stat:last-child{border-bottom:0}
+.order{border:1px solid #e5e7eb;border-radius:13px;padding:13px;margin-top:10px}
+.order.done{opacity:.55}
+.oh{display:flex;justify-content:space-between;gap:8px}
+.badge{font-size:11px;background:#fff7ed;color:#9a3412;padding:5px 7px;border-radius:20px;white-space:nowrap}
+.order ul{padding-left:18px}.order li{margin:5px 0}
+.ot{text-align:right;font-size:18px;font-weight:800;border-top:1px solid #eee;padding-top:9px}
+.actions{display:flex;gap:7px;margin-top:10px}.actions button{flex:1;border:0;border-radius:9px;padding:10px;font-weight:700;cursor:pointer}
+.done{background:#dcfce7;color:#166534}.del{background:#fee2e2;color:#991b1b}
+.clear{border:0;background:#eef0f3;border-radius:9px;padding:8px 10px;float:right;cursor:pointer}
+.empty{text-align:center;color:#777;padding:25px 5px}
+.report-note{font-size:12px;color:#6b7280;margin-top:8px}
+@media(max-width:380px){.foods{grid-template-columns:1fr}.food{min-height:auto}}
+</style>
+</head>
+<body>
+<header><h1>🍗 Street Food</h1><small>Захиалгын систем</small></header>
+
+<main>
+<section class="card">
+<h2>Шинэ захиалга</h2>
+<input id="customer" placeholder="Захиалагч / утас">
+
+<h3>Хоол сонгох</h3>
+<div class="foods" id="foods"></div>
+
+<h3>Сонгосон хоол</h3>
+<div id="cart" class="empty">Хоол сонгоно уу.</div>
+
+<div class="total"><span>Нийт</span><span id="total">0₮</span></div>
+<button class="save" onclick="saveOrder()">ЗАХИАЛГА ХАДГАЛАХ</button>
+</section>
+
+<section class="card">
+<div class="report-title">
+<h2>📊 Өнөөдрийн тайлан</h2>
+<div class="date" id="reportDate"></div>
+</div>
+
+<div class="summary">
+<div class="stat">Нийт захиалга<b id="count">0</b></div>
+<div class="stat">Нийт борлуулалт<b id="sales">0₮</b></div>
+</div>
+
+<h3>🍴 Хоол тус бүр</h3>
+<div id="foodStats"></div>
+<div class="report-note">Захиалгыг доороос устгасан ч өнөөдрийн тайлангийн тоо, борлуулалт хадгалагдана.</div>
+</section>
+
+<section class="card">
+<button class="clear" onclick="clearActiveOrders()">Бүгдийг устгах</button>
+<h2>📋 Одоогийн захиалгууд</h2>
+<div id="orders"></div>
+</section>
+</main>
+
+<script>
+const menu=[
+["Догбугги",7000],
+["Үдэн",3000],
+["Шарсан дог",3000],
+["Шарсан төмс",4000],
+["Наггетс",4000],
+["Шарсан төмстэй шаржигнуур тахиа",11000],
+["Чихэрлэг соустай догтой тахиа",13000]
+];
+
+let cart={};
+let orders=JSON.parse(localStorage.getItem("sf_orders")||"[]")||[];
+let reports=JSON.parse(localStorage.getItem("sf_daily_reports")||"{}")||{};
+
+const money=n=>n.toLocaleString("mn-MN")+"₮";
+
+function todayKey(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function todayText(){
+  const d=new Date();
+  return d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");
+}
+
+function getTodayReport(){
+  const key=todayKey();
+  if(!reports[key]){
+    reports[key]={orders:0,sales:0,items:{}};
+    menu.forEach((x,i)=>reports[key].items[i]=0);
+    localStorage.setItem("sf_daily_reports",JSON.stringify(reports));
+  }
+  return reports[key];
+}
+
+function renderFoods(){
+  document.getElementById("foods").innerHTML=menu.map((x,i)=>
+    `<button type="button" class="food" onclick="add(${i})">
+      <b>${x[0]}</b><span>${money(x[1])}</span>
+    </button>`
+  ).join("");
+}
+
+function add(i){
+  cart[i]=(cart[i]||0)+1;
+  renderCart();
+}
+
+function change(i,d){
+  cart[i]=(cart[i]||0)+d;
+  if(cart[i]<=0)delete cart[i];
+  renderCart();
+}
+
+function renderCart(){
+  const keys=Object.keys(cart);
+  const box=document.getElementById("cart");
+
+  if(!keys.length){
+    box.innerHTML='<div class="empty">Хоол сонгоно уу.</div>';
+  }else{
+    box.innerHTML=keys.map(i=>
+      `<div class="row">
+        <span>${menu[i][0]} × ${cart[i]}</span>
+        <span>${money(menu[i][1]*cart[i])}
+          <button onclick="change(${i},-1)">−</button>
+          <button onclick="change(${i},1)">+</button>
+        </span>
+      </div>`
+    ).join("");
+  }
+
+  const t=keys.reduce((s,i)=>s+menu[i][1]*cart[i],0);
+  document.getElementById("total").textContent=money(t);
+}
+
+function saveOrder(){
+  const keys=Object.keys(cart);
+  if(!keys.length){
+    alert("Хоолоо сонгоно уу.");
+    return;
+  }
+
+  const items=keys.map(i=>({
+    name:menu[i][0],
+    qty:cart[i],
+    unit:menu[i][1],
+    sub:menu[i][1]*cart[i],
+    menuIndex:Number(i)
+  }));
+
+  const total=items.reduce((s,x)=>s+x.sub,0);
+  const customer=document.getElementById("customer").value.trim()||"Захиалагч";
+
+  orders.unshift({
+    id:Date.now(),
+    customer,
+    items,
+    total,
+    time:new Date().toLocaleString("mn-MN"),
+    done:false
+  });
+
+  // Өдрийн тайланд захиалга нэмнэ.
+  const r=getTodayReport();
+  r.orders++;
+  r.sales+=total;
+  items.forEach(x=>{
+    r.items[x.menuIndex]=(r.items[x.menuIndex]||0)+x.qty;
+  });
+  reports[todayKey()]=r;
+
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  localStorage.setItem("sf_daily_reports",JSON.stringify(reports));
+
+  cart={};
+  document.getElementById("customer").value="";
+  renderCart();
+  renderOrders();
+  renderReport();
+}
+
+function renderReport(){
+  const r=getTodayReport();
+
+  document.getElementById("reportDate").textContent=todayText();
+  document.getElementById("count").textContent=r.orders;
+  document.getElementById("sales").textContent=money(r.sales);
+
+  document.getElementById("foodStats").innerHTML=menu.map((x,i)=>
+    `<div class="food-stat">
+      <span>${x[0]}</span>
+      <b>${r.items[i]||0} ш</b>
+    </div>`
+  ).join("");
+}
+
+function renderOrders(){
+  const box=document.getElementById("orders");
+
+  if(!orders.length){
+    box.innerHTML='<div class="empty">Одоогоор хүлээгдэж байгаа захиалга алга.</div>';
+    return;
+  }
+
+  box.innerHTML=orders.map((o,n)=>
+    `<div class="order ${o.done?'done':''}">
+      <div class="oh">
+        <b>№${orders.length-n} — ${o.customer}</b>
+        <span class="badge">${o.done?'Дууссан':'Хүлээгдэж байна'}</span>
+      </div>
+
+      <small>${o.time}</small>
+
+      <ul>
+        ${o.items.map(x=>`<li>${x.name} × ${x.qty} — <b>${money(x.sub)}</b></li>`).join("")}
+      </ul>
+
+      <div class="ot">Нийт: ${money(o.total)}</div>
+
+      <div class="actions">
+        <button class="done" onclick="toggle(${o.id})">${o.done?'Буцаах':'Дууссан'}</button>
+        <button class="del" onclick="removeO(${o.id})">Устгах</button>
+      </div>
+    </div>`
+  ).join("");
+}
+
+function toggle(id){
+  const o=orders.find(x=>x.id===id);
+  if(o)o.done=!o.done;
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  renderOrders();
+}
+
+// Энэ нь зөвхөн одоогийн захиалгыг устгана.
+// Өнөөдрийн тайлан устахгүй.
+function removeO(id){
+  // Зөвхөн одоогийн захиалгыг жагсаалтаас устгана.
+  // Өнөөдрийн тайлангийн тоо, борлуулалт, хоол тус бүрийн тоо хасагдахгүй.
+  orders=orders.filter(x=>x.id!==id);
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  renderOrders();
+  renderReport();
+}
+
+function clearActiveOrders(){
+  if(confirm("Өгөөд дууссан захиалгуудыг жагсаалтаас устгах уу?\n\nӨнөөдрийн тайлангийн тоо, борлуулалт хасагдахгүй.")){
+    orders=[];
+    localStorage.setItem("sf_orders","[]");
+    renderOrders();
+    renderReport();
+  }
+}
+
+renderFoods();
+renderCart();
+renderReport();
+renderOrders();
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
