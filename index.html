@@ -19,7 +19,7 @@ main{padding:12px;max-width:760px;margin:auto}
 h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:15px 0 10px}
 input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-size:16px}
 .foods{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.food{border:1px solid #d1d5db;background:#fff;border-radius:12px;padding:12px;text-align:left;min-height:68px;cursor:pointer}
+.food{border:1px solid #d1d5db;background:#fff;border-radius:12px;padding:8px;text-align:left;min-height:150px;cursor:pointer;display:flex;flex-direction:column;gap:7px;overflow:hidden}.food img{width:100%;height:90px;object-fit:cover;border-radius:9px;background:#f3f4f6}.food b{display:block;font-size:13px;line-height:1.2}.food span{display:block;margin-top:4px;color:#4b5563;font-size:13px}
 .food:active{transform:scale(.98)}
 .food b{display:block;font-size:14px}.food span{display:block;margin-top:5px;color:#4b5563;font-size:14px}
 .row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee}
@@ -45,7 +45,7 @@ input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-s
 .empty{text-align:center;color:#777;padding:25px 5px}
 .report-note{font-size:12px;color:#6b7280;margin-top:8px}
 @media(max-width:380px){.foods{grid-template-columns:1fr}.food{min-height:auto}}
-</style>
+.container-row{display:flex;align-items:center;gap:12px;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px}.container-btn{width:38px;height:38px;border:0;border-radius:9px;background:#eef0f3;font-size:22px}.container-row strong{min-width:60px;text-align:center}.container-row span{margin-left:auto;font-weight:700}.pay-row{display:flex;gap:8px}.pay-btn{flex:1;padding:11px;border:1px solid #d1d5db;border-radius:10px;background:#fff;font-weight:700}.pay-btn.active{background:#111827;color:#fff;border-color:#111827}.paid{color:#15803d}.unpaid{color:#dc2626}.report-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}.period-btn{border:1px solid #d1d5db;background:#fff;border-radius:9px;padding:9px 4px;font-weight:700}.period-btn.active{background:#111827;color:#fff}.pay-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pay-btn{border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:11px 5px;font-weight:700}.pay-btn.active{background:#111827;color:#fff}.payment-stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}.payment-stat:last-child{border-bottom:0}</style>
 </head>
 <body>
 <header><h1>🍗 Street Food</h1><small>Захиалгын систем</small></header>
@@ -57,6 +57,20 @@ input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-s
 
 <h3>Хоол сонгох</h3>
 <div class="foods" id="foods"></div>
+
+<h3>🥡 Авч явах сав</h3>
+<div class="container-row">
+  <button type="button" class="container-btn" onclick="changeContainer(-1)">−</button>
+  <strong id="containerQty">0 сав</strong>
+  <button type="button" class="container-btn" onclick="changeContainer(1)">+</button>
+  <span id="containerPrice">0₮</span>
+</div>
+
+<h3>Төлбөр</h3>
+<div class="pay-row">
+  <button type="button" id="unpaidBtn" class="pay-btn active" onclick="setPayment(false)">Төлөөгүй</button>
+  <button type="button" id="paidBtn" class="pay-btn" onclick="setPayment(true)">Төлсөн</button>
+</div>
 
 <h3>Сонгосон хоол</h3>
 <div id="cart" class="empty">Хоол сонгоно уу.</div>
@@ -77,7 +91,7 @@ input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-s
 </div>
 
 <h3>🍴 Хоол тус бүр</h3>
-<div id="foodStats"></div>
+<div id="foodStats"></div><h3>💳 Төлбөрөөр</h3><div id="paymentStats"></div>
 <div class="report-note">Захиалгыг доороос устгасан ч өнөөдрийн тайлангийн тоо, борлуулалт хадгалагдана.</div>
 </section>
 
@@ -90,16 +104,19 @@ input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-s
 
 <script>
 const menu=[
-["Догбугги",7000],
-["Үдэн",3000],
-["Шарсан дог",3000],
-["Шарсан төмс",4000],
-["Наггетс",4000],
-["Шарсан төмстэй шаржигнуур тахиа",11000],
-["Чихэрлэг соустай догтой тахиа",13000]
+["Догбугги",7000,"dogbuggi.jpeg"],
+["Үдэн",3000,"uden.jpeg"],
+["Шарсан дог",3000,"fried_dog.jpeg"],
+["Шарсан төмс",4000,"fries.jpeg"],
+["Наггетс",4000,"nuggets.webp"],
+["Шарсан төмстэй шаржигнуур тахиа",11000,"fries_chicken.jpeg"],
+["Чихэрлэг соустай догтой тахиа",13000,"sweet_chicken.jpeg"]
 ];
 
 let cart={};
+let containerQty=0;
+let paymentType="Бэлэн";
+const CONTAINER_PRICE=500;
 let orders=JSON.parse(localStorage.getItem("sf_orders")||"[]")||[];
 let reports=JSON.parse(localStorage.getItem("sf_daily_reports")||"{}")||{};
 
@@ -128,7 +145,8 @@ function getTodayReport(){
 function renderFoods(){
   document.getElementById("foods").innerHTML=menu.map((x,i)=>
     `<button type="button" class="food" onclick="add(${i})">
-      <b>${x[0]}</b><span>${money(x[1])}</span>
+      <img src="${x[2]}" alt="${x[0]}" loading="lazy">
+      <div><b>${x[0]}</b><span>${money(x[1])}</span></div>
     </button>`
   ).join("");
 }
@@ -144,6 +162,17 @@ function change(i,d){
   renderCart();
 }
 
+function changeContainer(d){
+  containerQty=Math.max(0,containerQty+d);
+  renderContainer();
+  renderCart();
+}
+function renderContainer(){
+  document.getElementById("containerQty").textContent=containerQty+" сав";
+  document.getElementById("containerPrice").textContent=money(containerQty*CONTAINER_PRICE);
+}
+function setPaymentType(v){paymentType=v;renderPayment();}
+function renderPayment(){["cashBtn","accountBtn","posBtn"].forEach(id=>document.getElementById(id)?.classList.remove("active"));const id={"Бэлэн":"cashBtn","Данс":"accountBtn","POS":"posBtn"}[paymentType];document.getElementById(id)?.classList.add("active");}
 function renderCart(){
   const keys=Object.keys(cart);
   const box=document.getElementById("cart");
@@ -162,70 +191,49 @@ function renderCart(){
     ).join("");
   }
 
-  const t=keys.reduce((s,i)=>s+menu[i][1]*cart[i],0);
+  const t=keys.reduce((s,i)=>s+menu[i][1]*cart[i],0)+containerQty*CONTAINER_PRICE;
   document.getElementById("total").textContent=money(t);
 }
 
 function saveOrder(){
   const keys=Object.keys(cart);
-  if(!keys.length){
-    alert("Хоолоо сонгоно уу.");
-    return;
-  }
+  if(!keys.length){ alert("Хоолоо сонгоно уу."); return; }
 
   const items=keys.map(i=>({
-    name:menu[i][0],
-    qty:cart[i],
-    unit:menu[i][1],
-    sub:menu[i][1]*cart[i],
-    menuIndex:Number(i)
+    name:menu[i][0], qty:cart[i], unit:menu[i][1],
+    sub:menu[i][1]*cart[i], menuIndex:Number(i)
   }));
+
+  if(containerQty>0){
+    items.push({name:"Авч явах сав",qty:containerQty,unit:500,
+      sub:containerQty*500,menuIndex:null,isContainer:true});
+  }
 
   const total=items.reduce((s,x)=>s+x.sub,0);
   const customer=document.getElementById("customer").value.trim()||"Захиалагч";
 
-  orders.unshift({
-    id:Date.now(),
-    customer,
-    items,
-    total,
-    time:new Date().toLocaleString("mn-MN"),
-    done:false
-  });
+  orders.unshift({id:Date.now(),customer,items,total,paymentType,
+    time:new Date().toLocaleString("mn-MN"),done:false});
 
-  // Өдрийн тайланд захиалга нэмнэ.
   const r=getTodayReport();
-  r.orders++;
-  r.sales+=total;
+  r.orders++; r.sales+=total; r.payments=r.payments||{"Бэлэн":0,"Данс":0,"POS":0}; r.payments[paymentType]=(r.payments[paymentType]||0)+total;
   items.forEach(x=>{
-    r.items[x.menuIndex]=(r.items[x.menuIndex]||0)+x.qty;
+    if(x.menuIndex!==null && x.menuIndex!==undefined)
+      r.items[x.menuIndex]=(r.items[x.menuIndex]||0)+x.qty;
   });
   reports[todayKey()]=r;
 
   localStorage.setItem("sf_orders",JSON.stringify(orders));
   localStorage.setItem("sf_daily_reports",JSON.stringify(reports));
 
-  cart={};
+  cart={}; containerQty=0; paymentType="Бэлэн";
   document.getElementById("customer").value="";
-  renderCart();
-  renderOrders();
-  renderReport();
+  renderCart(); renderContainer(); renderPayment(); renderOrders(); renderReport();
 }
 
-function renderReport(){
-  const r=getTodayReport();
-
-  document.getElementById("reportDate").textContent=todayText();
-  document.getElementById("count").textContent=r.orders;
-  document.getElementById("sales").textContent=money(r.sales);
-
-  document.getElementById("foodStats").innerHTML=menu.map((x,i)=>
-    `<div class="food-stat">
-      <span>${x[0]}</span>
-      <b>${r.items[i]||0} ш</b>
-    </div>`
-  ).join("");
-}
+function renderReport(){showReport("today",document.querySelector(".period-btn.active"));}
+function keyFromDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function showReport(period,btn){document.querySelectorAll(".period-btn").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");const now=new Date();now.setHours(0,0,0,0);let start=new Date(now),end=new Date(now);if(period==="yesterday"){start.setDate(start.getDate()-1);end.setDate(end.getDate()-1);}else if(period==="week"){start.setDate(start.getDate()-((start.getDay()+6)%7));end=new Date(start);end.setDate(end.getDate()+6);}else if(period==="month"){start=new Date(now.getFullYear(),now.getMonth(),1);end=new Date(now.getFullYear(),now.getMonth()+1,0);}const agg={orders:0,sales:0,items:{},payments:{"Бэлэн":0,"Данс":0,"POS":0}};menu.forEach((x,i)=>agg.items[i]=0);for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){const r=reports[keyFromDate(d)];if(!r)continue;agg.orders+=r.orders||0;agg.sales+=r.sales||0;menu.forEach((x,i)=>agg.items[i]+=r.items?.[i]||0);const pp=r.payments||{};Object.keys(agg.payments).forEach(t=>agg.payments[t]+=pp[t]||0);}const fmt=d=>d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");document.getElementById("reportDate").textContent=start.getTime()===end.getTime()?fmt(start):fmt(start)+" – "+fmt(end);document.getElementById("count").textContent=agg.orders;document.getElementById("sales").textContent=money(agg.sales);document.getElementById("foodStats").innerHTML=menu.map((x,i)=>`<div class="food-stat"><span>${x[0]}</span><b>${agg.items[i]||0} ш</b></div>`).join("");document.getElementById("paymentStats").innerHTML=Object.entries(agg.payments).map(([k,v])=>`<div class="payment-stat"><span>${k}</span><b>${money(v)}</b></div>`).join("");}
 
 function renderOrders(){
   const box=document.getElementById("orders");
@@ -242,7 +250,7 @@ function renderOrders(){
         <span class="badge">${o.done?'Дууссан':'Хүлээгдэж байна'}</span>
       </div>
 
-      <small>${o.time}</small>
+      <small>${o.time} · <b>${o.paymentType||"Бэлэн"}</b></small>
 
       <ul>
         ${o.items.map(x=>`<li>${x.name} × ${x.qty} — <b>${money(x.sub)}</b></li>`).join("")}
@@ -287,6 +295,8 @@ function clearActiveOrders(){
 
 renderFoods();
 renderCart();
+renderContainer();
+renderPayment();
 renderReport();
 renderOrders();
 
