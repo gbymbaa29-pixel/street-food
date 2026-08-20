@@ -1,48 +1,366 @@
-PK   »]               index shien.htmlux         UT
-  CÖ…jRÖ…jBÖ…jÅ\ï’ÛÖuÿÎ§€`%KxA,¹´+r¹ªãÚµ–åZêt:›$.IhA€ÀÝ¥)ÎHN5ñ4ÕÄŽ=ugR×u;níIÖ^;‰G‘¾ô@û
-ü~„žsîp‚Ü•¼q¬I ÷ž¿¿sî¹ WÞ¾`yíp4`J/ì;;¥müRÓí6Õ¾«â
-fZðÕg¡©´{¦°°©ÃNeKo»fŸ5Õ›<?T•¶ç†Ì…a‡¶öš;°Û¬BºíÚ¡m:• m:¬YÓãY•Ž6ÛÞósdÃë³JÛs<_¢üL­VÛZÝÌ5 ‡Uú^Ë†¯CÖªÀJÛ˜-‡I“G,8ËÄ 4ÃaPi™>üe(´³½_	}Ó
-œan…^h‡"7BŸ±PyÑó,œîØî¾â3 oºv‡`ÉžÏ:éµq;ðÈ'DiGš¿½Âo•¶IÒÒ³ã–wT	ì×m·[oy¾Åü
-Ü™”Zž5÷M¿k»õj£jt}oèZõg:kõÎ¥Yº.ìÛè€°•ŽÙ·Q½Âµ
-FAÈúúPÞkfû]¾ãtõëzLùû«ªþœNÖ°O%`¾Ý™”GÌËÁ±Óé4¦e¡Ä Žv¹vip¤,+Ì=( f‡ULŸ™Û VBo i
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Street Food">
+<link rel="manifest" href="manifest.json">
+<title>Street Food</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{background:#111827;color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 16px;position:sticky;top:0;z-index:5}
+header h1{margin:0;font-size:21px}header small{opacity:.7}
+main{padding:12px;max-width:760px;margin:auto}
+.card{background:#fff;border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 2px 12px #0000000c}
+h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:15px 0 10px}
+input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-size:16px}
+.foods{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.food{border:1px solid #d1d5db;background:#fff;border-radius:12px;padding:8px;text-align:left;min-height:150px;cursor:pointer;display:flex;flex-direction:column;gap:7px;overflow:hidden}.food img{width:100%;height:90px;object-fit:cover;border-radius:9px;background:#f3f4f6}.food b{display:block;font-size:13px;line-height:1.2}.food span{display:block;margin-top:4px;color:#4b5563;font-size:13px}
+.food:active{transform:scale(.98)}
+.food b{display:block;font-size:14px}.food span{display:block;margin-top:5px;color:#4b5563;font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee}
+.row button{border:0;border-radius:7px;padding:5px 10px;cursor:pointer}
+.total{display:flex;justify-content:space-between;font-size:21px;font-weight:800;padding:14px 0}
+.save{width:100%;padding:14px;border:0;border-radius:12px;background:#111827;color:#fff;font-weight:800;font-size:16px;cursor:pointer}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:11px;font-size:13px}
+.stat b{display:block;font-size:18px;margin-top:3px}
+.report-title{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.date{font-size:13px;color:#6b7280}
+.food-stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
+.food-stat:last-child{border-bottom:0}
+.order{border:1px solid #e5e7eb;border-radius:13px;padding:13px;margin-top:10px}
+.order.done{opacity:.55}
+.oh{display:flex;justify-content:space-between;gap:8px}
+.badge{font-size:11px;background:#fff7ed;color:#9a3412;padding:5px 7px;border-radius:20px;white-space:nowrap}
+.order ul{padding-left:18px}.order li{margin:5px 0}
+.ot{text-align:right;font-size:18px;font-weight:800;border-top:1px solid #eee;padding-top:9px}
+.actions{display:flex;gap:7px;margin-top:10px}.actions button{flex:1;border:0;border-radius:9px;padding:10px;font-weight:700;cursor:pointer}
+.done{background:#dcfce7;color:#166534}.del{background:#fee2e2;color:#991b1b}
+.clear{border:0;background:#eef0f3;border-radius:9px;padding:8px 10px;float:right;cursor:pointer}
+.empty{text-align:center;color:#777;padding:25px 5px}
+.report-note{font-size:12px;color:#6b7280;margin-top:8px}
+@media(max-width:380px){.foods{grid-template-columns:1fr}.food{min-height:auto}}
+.container-row{display:flex;align-items:center;gap:12px;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px}.container-btn{width:38px;height:38px;border:0;border-radius:9px;background:#eef0f3;font-size:22px}.container-row strong{min-width:60px;text-align:center}.container-row span{margin-left:auto;font-weight:700}.pay-row{display:flex;gap:8px}.pay-btn{flex:1;padding:11px;border:1px solid #d1d5db;border-radius:10px;background:#fff;font-weight:700}.pay-btn.active{background:#111827;color:#fff;border-color:#111827}.paid{color:#15803d}.unpaid{color:#dc2626}.payment-toggle{display:flex;gap:8px;margin:12px 0 6px}.payment-toggle button{flex:1;border:1px solid #d1d5db;background:#fff;border-radius:9px;padding:9px 5px;font-weight:700}.payment-toggle .selected-paid{background:#15803d;color:#fff;border-color:#15803d}.payment-toggle .selected-unpaid{background:#dc2626;color:#fff;border-color:#dc2626}.report-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}.period-btn{border:1px solid #d1d5db;background:#fff;border-radius:9px;padding:9px 4px;font-weight:700}.period-btn.active{background:#111827;color:#fff}.pay-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.pay-btn{border:1px solid #d1d5db;background:#fff;border-radius:10px;padding:11px 5px;font-weight:700}.pay-btn.active{background:#111827;color:#fff}.payment-stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}.payment-stat:last-child{border-bottom:0}.pay-later{width:100%;border:0;border-radius:11px;padding:13px;background:#111827;color:#fff;font-weight:800;font-size:15px;margin:10px 0}.payment-paid{margin:10px 0;padding:11px 12px;border-radius:10px;background:#dcfce7;color:#15803d;font-weight:800}.method-toggle{display:flex;gap:7px;margin:8px 0 12px}.method-toggle button{flex:1;border:1px solid #d1d5db;background:#fff;border-radius:9px;padding:10px 5px;font-weight:800}.method-toggle .selected-method{background:#111827;color:#fff;border-color:#111827}.method-label{font-size:13px;font-weight:800;color:#6b7280;margin:8px 0 6px}</style>
+</head>
+<body>
+<header><h1>🍗 Street Food</h1><small>Захиалгын систем</small></header>
 
-ÀÆÀ Vž[B»½?jÀsÐîum±£úFÌ]éÕRÝI5°«¯ÖG1"è›Ž3öfÛGucsRê›¶;Ž«­·¾yÄÑ\ß¼T¥k"iCoR2Ú¦oeÔDÅ„|Ó²‡A½¶…2Ç$7à¢0ôúœ9°gZÞa½ª¬¢¦øñL•ÿ×VÇ©µË© U¥Jƒ'½5yDÊ‡~ã ~R²ÝÁ0s…jÕêRÉÖH”¼&RÏ±-å«fmX­¼J0@2)zlÑlcËŽ9ªw}ÛjàGwBŠëaß…é_¿®9¨_N¦Žç3_lßUÉ¾hë…Ó±»nÝa°Ñ [÷˜Ýí…`
-ta{è  ÂgCpúXâŽÃ@+ø¨X¶ÏÚ1.2Iº	31eupRÏ¶,æNHpÅîwe‹
-^—‘•×º
-”0ßÕ)ßådG?Î†¥ ÛJlÙr¼ö¾lpô„$Kô2VÅ¤``º¹yn&ë¨=ÀõÖÆÆ¥µQáŠº	Ú°1å¼Žç÷ë”ÁËÆå-MY$p9“4‹¤Y'i|ïpœñÏí!D}gT‰µ`¹i±ð1·A^¯Ø€¸ Ž™šqe"°ŠÑÐHÒ$ÁsŒ1ÎWi
-á™Ã²šsÝ¦D¬6‹, z¡é<‰ÙDÅ/¹“·ªÕT‹uÔ&ø©(œ×ÓpÎ‹Î3ÎÂÜœç›
-öY=ƒa;zÒèß"'ãÚ›M¢—;f§UØÛd3Ù¨*»7—šÖ‹»•fe&Ÿä3ªUh±=QL1ÎE²°û¥ÖæêVUÄ$OÂUÊ€§Ã;áPwÌ ¬´{¶çßx
-B7
-òr±Öd7¬e-ÊNÐ°<—¥«îÆ>è=‰®©9[¦ÕÍØ³–Ï¨Î&³b_6×Ök«™¸ÝLâ$VdñtØ VˆmÝõ}s‹¯¸B¨àúBè™ˆgŽ×"@½p,-H>FTyù`âÝ2ž‹§G|å4i
-²Ö‹—«¼âÑqjÃÁõÚ¼4q9—53rn‚œ3Y€+[ßjwÚ,I,µK—6ÖÖ'†Åœl¸3¶ÊV]®µj-¬­fúRú•f0Ö©vÖÈ»gdX­åÜì3òBj
-G²{D¸
-I677‚«èÏ
-9/¸^6’Wó‘,›ŸÐúW}fÙf9­(×¶@Dm,*§¹é’/¦c©Ž¡êMì¡bEäÊ9YHT›g‹èÕüºI…¦ÄµºãX+¤£ß@UàIiÙË±À•8}Ïí’87ªÄgü63
-«áŠT4[Åc`ŽfÍ§zŠjŠXÉ¬3g-—«³I©X`dˆÚkñú,döoHÂ¶Æñ½­êš51†®|×j¯^Z½DÌú`3Àf·›_ÝâŠ)Þ>¬Òöá’0†4­8<iý.‡íed…Æ‘s ®fV…”ËØŠô^`+a—¹…Á²i­6ŸflU‘…¾çœi/S˜–×uˆs-—¸E­
-²Â®l„á9y½ÐÈ	›3p6rN×s-£g]O»÷Ë—~sÑódZ2þŒX†Ç¢ŒDGCúr‘?¯®¯å+°§.ò7
-@(D¦èÈ<Ëz@Zaæ&À\]ÀC6'ÎÄè³° xœ—£¤@ÙâZ:2³Î?E‘Êy”ÍŠ+%~ÿ©º é˜-(™r»†¼÷ŠjaÌÝÛ+¢[¸½"º¼Ø=_æïl÷j;ß~ðà=%Ói„›ÛÔ%Û‰Þ‹Ž§÷£?FÇÑÃèdú‹è‘2½ýqzoúFôEô' OÃ8u W*mc3
-»”¼—¢´çASÅ–õšWw¢Þ£é%úƒL<:*«0„šUŠmÁ$ˆ<¯Ï|U´YÏs€GSÍubý\YQ¦?‘Ž§÷T”¡·¶}=†?QÞÇÑ# ÿxz8¬ Ë>ˆå¢"L%nü'è‘o?øèC%z+úXL}†|‘àqôÙ,©Lb(Ê6Ç¡‚Ý÷¦Ê/ÔÙá¤TÅsÛŽÝÞ‡û=Óí²çã§åJMSw¾yóWÛ+œ æµ7R<òïÂ‘ºSMÄãCÎM”b9+ZY	^ñí6¾yã·À#îRkF&ž Ÿ(àDò‘dK¢gÒ+.Uëj‘;áó1ºýgFÂDòõ`À›$Fô> åËéBªTt1J’XÐŠm&¨aÃE2^^ÇÐ-ƒU ŽoxÿŸ¿ŽÞ‰ÞRàâ­è]ü	7àQj5àÁÃ…!’r/BÏ·¼óÏÊ×G¾þäëO¢Ï§wQ14%€~`<<q$Âþ 9'ù×x¨Z`½\Ms:šÓ*Báë­l­žwø*,/…žeŽ–ô°g `ºT‘¯?™ÞÍ ëlÌæp± Ï,§éÏÁT'çÍ	j€ý„É&G4à2:9?}pB/áý†r'F¹¬G‘E{. *,>Ô$"f“pKÄô_yUC‚“D>…˜¾=Äh$>„Xã„ÓÁwq<ÂZ3˜£$ûàs%ï7€È= øÕïP¿LbÀ}8'YšOÿÕ‰ý€èaô):7‰¼yªNˆˆŠ&C§û¸ÓWs`tŒ>Ž>ÇŸ ä=ðÅ/¸_Àãk
-=`Èôü¹+ÞƒÏG°jñK
-“¯~}©Àjö ú}.ËÊÌ:|‚™Wá\ô0ê\£¤, O’Ô ¦ÕDêÐüÒâ>ÃHÜtz¾Ê&JjßÈË^?Gf@óm`‚QÀŒ&÷%Dól æý‰àˆÊ™Ôù\Êyèdª«$÷¦zl¯ðôiûö Ü)A’B01lî–vUÈÜÈêS z‚,UvU]µ¼nkØíÚÆíëª{:ýê·è×è‘ª¯Ñ¡Å\é1:€áÒá$Ùñmf½$ç
-'ôþ	Ê}=™Èƒß'ŸD_@À$£\…qÈZƒDaÊÀÚôMÂíï)/>B;@©Š"ãªz­–ò~
-¶*íý¬~ÿ•à}„5@é:P+œyŒX&•	~_fér#<ÃÝÒ^£Tr Å" 9ž4ø…Tã4«üžˆã›”Sóq¤6„[Ÿ¿þòÍç®¾üÂ«¯½òêÕç_hnTÅtŽæßÜ¸þ2lrü€•¯m:7BÏ7»Ì 3^…ílY
-:¯	0iwî¨»{øµ»ÇiðLq6"–i;£×Ä¢5žàªCÐsÙ¨é6w\#ô^BBÊrØ~”Õ¾[¹ö²ª-«FA·Rgèò`¤õôoÙ¨¬a¡át¬¦Ë\ãËZîú,ú®b¡</ç!$Ë@«¢.úôè®3p¿¦.˜gañYÕÕª:;”Óž×(Mò¢ÝdGáÓÈfœ]6ã)dƒq7Q<±ÆJîƒR£¢ˆv§|AømžîÑ`E‘o5Ç#õªNë|óìx2iÐhL/FÇó_0Û½rùH·µæŽLÁ ñ»ö^³ªñ$s‘¤ø2€Ý•Å}¨LRËÌ²¶ð™²ãÎ/à†°¼öC­ù‚ÃðçFW­²Ø!i†íB(þøæµ—š¤VßÄ*‘ä·Ö;HDZ `ƒ]¾8¶'šÊ'Cµd÷»Jà·›êÅñÑîêÞDUL'äWU¼r<7åMÕ1_¥Ó¨ híˆaTlPEqLU>Ú­íi“l™Oã%ç\jÆmÏvËj0(¦Ía˜B?•Å;wª€KŽe4äóˆ¹Ül¾™*Ûº5Ÿ„%°&îm,Y†ÅÃÏÂ"Ý¯Y1¦ÓÄyÍ{à¬£rU—ï/[šD:! ñËF½8™=ªf`ÿyqF*#‰*v¯jãLÔø~3KûZ¦úln
-È*‘õJº’”´±¼°4¸¢baÆÉ£±²òìl!z2[..!ó¥ß³+J¡¸geHMXä±Q‚Æ¥º¿¡Ê.ä5ãds&CÍëtÄÅÀß„XBÞòŽšó}‡{{,ò*Î7ævÃžH«0[Ê/Kra~öVÀ%?æ¬ˆ(1Å¤e7ãäq+³í‘Wâ$©¢s‹òï)Ç",ãŒ2;O«í=+&h“dhº5Ìõ](%êE­Ÿ3MœiÖˆ9I¹©nÑ•œöpÙHœrkùÌ¶Y¹P––gµÒ!…-Šº…ÍÛ0EæÒœÔy9"g0K	8«1ˆð³H`	±t6d{Ð2AP™CO…ÖSŒèÊOÃQ=¶2tí°žM§)Á°U/0$Õ
-WéXãËÃ~Tµ5tŠ–„lçª’Ìƒ^yLÂ¨ÅKU'É$:I •±.‚e|‰ÏR©\¨Ót;H’=ô‡l2ƒôi“K•Âçˆàsd ½*%¸Õ» sÄÍ`Í80!3 äé—±ží «d)^“C7èÙ°<¶­:‡†ë–5=¦Ç+5ÄÕ¥æÀ0¨Ïn+â×¨E_WU;5¯È7ƒzÇ„ÄÃmÚàˆ´âW×ëØ ƒ‚³žVž:«à¤&ÜñÜP~3_»Ò:ÍO¢ËË€ZƒjÐå&©DQ@Nˆ«Ï£æŽ@L§|d$n½Ðl¢c•þPÉÞÂw üli¾(V¥aPËÝ¥ÂæÈ À8DIÁÑTÕ½¦O
-Î­xÅ,_êòÛ¼ÒýîÕ²¨ËpÏ™ßožº×\T¬ä`ÛTÕ™Âª öÊñ¸‰_§ ˜]¸“ÍÔMTÉìªžÈûÓ!óG7è­•ç—ÕÙ×Áª–)z õ½è{}Â3Ô˜ßßÞR.‚R}¸¸:ˆ«‹uzÎq2j#¤H82hÑÉBÈR}ï€•ÕToˆ¤ŒÆH‡áV ÓàQ	)EÞØÂ%‚ðÇÞ|UÕéÖÀ–A€*¥Ca ¦ƒ³²w/¸Ù¤ËÀ›Ù*x§#iË¯›A¹Ð ZÉcüyH‘’!ŽýëSé–å;°Ë—´ljÄ,œ†, &	@ÝíX‚Œ²ÒÅ$½–cÚ„åº`ÂÝev»¶ìq’‡ßªÜ¯UaÌlô×«½/2?Œ{ú€ºabô»Øx›Þ£‹W®ßÀÑ“FQ3 DÊô àq3kak»	š7R3ËF®iÚ8^(¤-¿²{
-jhh˜ãlwÈÈY¬ÍxÄM÷ÅJ"–¼{šì8˜~_1ÄÎ¶!Öáx’ ë¨Ûšž!V¾;wÊeÏÀåtÑ ŠZ¡S«ò0Ü ¬dõÐÐ‹ñù„`×32k7B+ã»+9WÎ:D÷øÑmÔS¬uÀú4Ê¸b&cx
-Àe¨ØÍ=„µrÑSZ3Ë©$ Ú·~Ø´š;ßC·lîz&½@ÌÖëIŠ¸	N,k`&þüú
-È.\OÂŽÿ›»ï(ê2Þ‚ñó7RYž)tçÏã/ Šö	ÀpM_9-j{ÝÊ)¨ðdñVPt¤xç	[TrÄ€'ÊôÍôíØ-i76W°Ìk,Y6±‚gØ¶/ËA¢q™w÷õƒ½¼ÔòÙ¤TðýŒÔÜl Ú¤XÖÙ
-$®VÒ­ÚÂæ@ÜhOÚ"s<iƒ }aô_y)Óûàñ
-¾u¢lÑ§ô¦ìdÎ[;ñCn'ÄÔd›“DˆJöt7í…JòñÓâÇ™¾²„ŸKõ¥¥I¦‰™ŒîÉ]ˆÖÎ7ÿô¯Ç‹TÜ	„Ï»D1®3É7Ù^DLŽÍ«;)ÿè]zés¿I¢æêQt¼4)ê”â+~‰cŸÄGƒ’çC'GñM	Úë¡èØ'î\E…ö
-\A	}´uŒ“$ NÁ†_Ù¢Ò;ëºS©iÊ
-¡ŒùÄ¿$'þ%åŠr«€‹|dNÝùæßßÉ¾ô–ÉúÊ;Ê¾ž›ÞÅ¡rGâ1_ž–&RË:ËP>/
-¿
-ç„O£Á±ep· •?£™(©€–®,åŽÃq°KÇ’n&Ÿ_&`X]¦¢©øŽÿ%z;úMôkøû~AgëÉÅ•Ùw2¦A"þò¸ñ ìÃóªÅï"Nç–;Qàw^¢n)õÉÏªÄçRsGU²
-Xˆ˜= òcpÜÛðùŸâþ~”	gÍ›dgÄ</ðŠ|ç	ß”¿4žªN Ó\“¢T,þMR}ã#kà×T"¾5¿.!+úï¢C#3àN›ÜóÞìà×¶¤ŠÅ‹—öŽíZ¼e`c€ÚVÒaö4©6(q;¤ÛTghqå@¹—Xt?nÙ–Îÿ×ßIìêÇ	Š¡üâB~+¤å7B¢ÛUhêmž·Q”‚¾XÁË3k°÷s´SÖ"™Â&œå_Þ.òQ
-LvOŠ{Oã…dóÿ>€—VVqà>þ
-u<Ï7½O…$ó…çÂ²‡ä°‚5Þ)‡gã)éY8ySÃ³°
-÷Þ
-4ïElNN"~Š¤g:à§'‡¬³'+3SçLÞ¡¤Pp`ñÁp!Ã÷‡Ô‚ó„ãä¥XÇö-˜í„›
-]JœÂƒƒgó
-¾=ƒáW~âþÄ=·Ì³¸ª‰]®°ûîÞ)‡bÓÉ´x›š7è¬Iqf-èÌÅ).›Õ´yi.÷$35î…¯	ÔY+Hò§S$ç&:ˆ8XüÌàÂ·NOÏRætT£”=Spf&ÿÞ¦”7}Þ=%Ð*.ÿJÿàùûX\Û®âš v×‘	É•‘iø¬kãÛ phÜÆFPÛ±1«+';° ]¡Lâÿøg…þOPÿPK » òØ¶  J  PK   »]» òØ¶  J            ¶    index shien.htmlux         UT CÖ…jPK      V       
+<main>
+<section class="card">
+<h2>Шинэ захиалга</h2>
+<input id="customer" placeholder="Захиалагч / утас">
+
+<h3>Хоол сонгох</h3>
+<div class="foods" id="foods"></div>
+
+<h3>🥡 Авч явах сав</h3>
+<div class="container-row">
+  <button type="button" class="container-btn" onclick="changeContainer(-1)">−</button>
+  <strong id="containerQty">0 сав</strong>
+  <button type="button" class="container-btn" onclick="changeContainer(1)">+</button>
+  <span id="containerPrice">0₮</span>
+</div>
+
+<h3>Сонгосон хоол</h3>
+<div id="cart" class="empty">Хоол сонгоно уу.</div>
+
+<div class="total"><span>Нийт</span><span id="total">0₮</span></div>
+<button class="save" onclick="saveOrder()">ЗАХИАЛГА ХАДГАЛАХ</button>
+</section>
+
+<section class="card">
+<div class="report-title">
+<h2>📊 Өнөөдрийн тайлан</h2>
+<div class="date" id="reportDate"></div>
+</div>
+
+<div class="report-controls">
+  <button type="button" class="period-btn active" onclick="showReport('today',this)">Өнөөдөр</button>
+  <button type="button" class="period-btn" onclick="showReport('yesterday',this)">Өчигдөр</button>
+  <button type="button" class="period-btn" onclick="showReport('week',this)">7 хоног</button>
+  <button type="button" class="period-btn" onclick="showReport('month',this)">Энэ сар</button>
+</div>
+
+<div class="summary">
+<div class="stat">Нийт захиалга<b id="count">0</b></div>
+<div class="stat">Нийт борлуулалт<b id="sales">0₮</b></div>
+</div>
+
+<h3>🍴 Хоол тус бүр</h3>
+<div id="foodStats"></div><h3>💳 Төлбөрийн төлөв</h3><div id="paymentStats"></div>
+<div class="report-note">Захиалга хадгалсны дараа захиалга бүр дээр Төлсөн / Төлөөгүй гэж сонгоно. Захиалгыг устгасан ч тайлангийн тоо, борлуулалт хасагдахгүй.</div>
+</section>
+
+<section class="card">
+<button class="clear" onclick="clearActiveOrders()">Бүгдийг устгах</button>
+<h2>📋 Одоогийн захиалгууд</h2>
+<div id="orders"></div>
+</section>
+</main>
+
+<script>
+const menu=[
+["Догбугги",7000,"dogbuggi.jpeg"],
+["Үдэн",3000,"uden.jpeg"],
+["Шарсан дог",3000,"fried_dog.jpeg"],
+["Шарсан төмс",4000,"fries.jpeg"],
+["Наггетс",4000,"nuggets.webp"],
+["Шарсан төмстэй шаржигнуур тахиа",11000,"fries_chicken.jpeg"],
+["Чихэрлэг соустай догтой тахиа",13000,"sweet_chicken.jpeg"]
+];
+
+let cart={};
+let containerQty=0;
+let paymentType="Төлөөгүй";
+const CONTAINER_PRICE=500;
+let orders=JSON.parse(localStorage.getItem("sf_orders")||"[]")||[];
+let reports=JSON.parse(localStorage.getItem("sf_daily_reports")||"{}")||{};
+
+const money=n=>n.toLocaleString("mn-MN")+"₮";
+
+function todayKey(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+function todayText(){
+  const d=new Date();
+  return d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");
+}
+
+function getTodayReport(){
+  const key=todayKey();
+  if(!reports[key]){
+    reports[key]={orders:0,sales:0,items:{}};
+    menu.forEach((x,i)=>reports[key].items[i]=0);
+    localStorage.setItem("sf_daily_reports",JSON.stringify(reports));
+  }
+  return reports[key];
+}
+
+function renderFoods(){
+  document.getElementById("foods").innerHTML=menu.map((x,i)=>
+    `<button type="button" class="food" onclick="add(${i})">
+      <img src="${x[2]}" alt="${x[0]}" loading="lazy">
+      <div><b>${x[0]}</b><span>${money(x[1])}</span></div>
+    </button>`
+  ).join("");
+}
+
+function add(i){
+  cart[i]=(cart[i]||0)+1;
+  renderCart();
+}
+
+function change(i,d){
+  cart[i]=(cart[i]||0)+d;
+  if(cart[i]<=0)delete cart[i];
+  renderCart();
+}
+
+function changeContainer(d){
+  containerQty=Math.max(0,containerQty+d);
+  renderContainer();
+  renderCart();
+}
+function renderContainer(){
+  document.getElementById("containerQty").textContent=containerQty+" сав";
+  document.getElementById("containerPrice").textContent=money(containerQty*CONTAINER_PRICE);
+}
+function setPaymentType(v){paymentType=v;renderPayment();}
+function renderPayment(){ /* Төлбөрийг захиалга хадгалсны дараа сонгоно. */ }
+function setPayment(){ /* Төлбөрийг захиалгын жагсаалтаас сонгоно. */ }
+
+function renderCart(){
+  const keys=Object.keys(cart);
+  const box=document.getElementById("cart");
+
+  if(!keys.length){
+    box.innerHTML='<div class="empty">Хоол сонгоно уу.</div>';
+  }else{
+    box.innerHTML=keys.map(i=>
+      `<div class="row">
+        <span>${menu[i][0]} × ${cart[i]}</span>
+        <span>${money(menu[i][1]*cart[i])}
+          <button onclick="change(${i},-1)">−</button>
+          <button onclick="change(${i},1)">+</button>
+        </span>
+      </div>`
+    ).join("");
+  }
+
+  const t=keys.reduce((s,i)=>s+menu[i][1]*cart[i],0)+containerQty*CONTAINER_PRICE;
+  document.getElementById("total").textContent=money(t);
+}
+
+function saveOrder(){
+  const keys=Object.keys(cart);
+  if(!keys.length){ alert("Хоолоо сонгоно уу."); return; }
+
+  const items=keys.map(i=>({
+    name:menu[i][0], qty:cart[i], unit:menu[i][1],
+    sub:menu[i][1]*cart[i], menuIndex:Number(i)
+  }));
+
+  if(containerQty>0){
+    items.push({name:"Авч явах сав",qty:containerQty,unit:500,
+      sub:containerQty*500,menuIndex:null,isContainer:true});
+  }
+
+  const total=items.reduce((s,x)=>s+x.sub,0);
+  const customer=document.getElementById("customer").value.trim()||"Захиалагч";
+
+  orders.unshift({id:Date.now(),customer,items,total,paymentStatus:"Төлөөгүй",paymentMethod:"",showPaymentMethods:false,
+    time:new Date().toLocaleString("mn-MN"),dateKey:todayKey(),done:false});
+
+  const r=getTodayReport();
+  r.orders++; r.sales+=total;
+  items.forEach(x=>{
+    if(x.menuIndex!==null && x.menuIndex!==undefined)
+      r.items[x.menuIndex]=(r.items[x.menuIndex]||0)+x.qty;
+  });
+  reports[todayKey()]=r;
+
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  localStorage.setItem("sf_daily_reports",JSON.stringify(reports));
+
+  cart={}; containerQty=0; paymentType="Төлөөгүй";
+  document.getElementById("customer").value="";
+  renderCart(); renderContainer(); renderPayment(); renderOrders(); renderReport();
+}
+
+function renderReport(){showReport("today",document.querySelector(".period-btn.active"));}
+function keyFromDate(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function showReport(period,btn){document.querySelectorAll(".period-btn").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");const now=new Date();now.setHours(0,0,0,0);let start=new Date(now),end=new Date(now);if(period==="yesterday"){start.setDate(start.getDate()-1);end.setDate(end.getDate()-1);}else if(period==="week"){start.setDate(start.getDate()-((start.getDay()+6)%7));end=new Date(start);end.setDate(end.getDate()+6);}else if(period==="month"){start=new Date(now.getFullYear(),now.getMonth(),1);end=new Date(now.getFullYear(),now.getMonth()+1,0);}const agg={orders:0,sales:0,items:{},payments:{"Төлсөн":0,"Төлөөгүй":0},methods:{"Бэлэн":0,"Данс":0,"POS":0}};menu.forEach((x,i)=>agg.items[i]=0);for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){const r=reports[keyFromDate(d)];if(!r)continue;agg.orders+=r.orders||0;agg.sales+=r.sales||0;menu.forEach((x,i)=>agg.items[i]+=r.items?.[i]||0);orders.forEach(o=>{const k=o.dateKey||((o.time||"").slice(0,10));if(k===keyFromDate(d)) agg.payments[o.paymentStatus==="Төлсөн"?"Төлсөн":"Төлөөгүй"]+=o.total||0;
+      if(o.paymentStatus==="Төлсөн" && o.paymentMethod) agg.methods[o.paymentMethod]=(agg.methods[o.paymentMethod]||0)+(o.total||0);});}const fmt=d=>d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");document.getElementById("reportDate").textContent=start.getTime()===end.getTime()?fmt(start):fmt(start)+" – "+fmt(end);document.getElementById("count").textContent=agg.orders;document.getElementById("sales").textContent=money(agg.sales);document.getElementById("foodStats").innerHTML=menu.map((x,i)=>`<div class="food-stat"><span>${x[0]}</span><b>${agg.items[i]||0} ш</b></div>`).join("");document.getElementById("paymentStats").innerHTML=Object.entries(agg.payments).map(([k,v])=>`<div class="payment-stat"><span>${k}</span><b>${money(v)}</b></div>`).join("");}
+
+function renderOrders(){
+  const box=document.getElementById("orders");
+
+  if(!orders.length){
+    box.innerHTML='<div class="empty">Одоогоор хүлээгдэж байгаа захиалга алга.</div>';
+    return;
+  }
+
+  box.innerHTML=orders.map((o,n)=>
+    `<div class="order ${o.done?'done':''}">
+      <div class="oh">
+        <b>№${orders.length-n} — ${o.customer}</b>
+        <span class="badge">${o.done?'Дууссан':'Хүлээгдэж байна'}</span>
+      </div>
+
+      <small>${o.time}</small>
+
+      <ul>
+        ${o.items.map(x=>`<li>${x.name} × ${x.qty} — <b>${money(x.sub)}</b></li>`).join("")}
+      </ul>
+
+      <div class="ot">Нийт: ${money(o.total)}</div>
+
+      ${o.paymentStatus==='Төлсөн' ? `
+      <div class="payment-paid">✓ Төлсөн — ${o.paymentMethod || 'төрөл сонгоогүй'}</div>
+      <div class="method-label">Төлбөрийн төрөл</div>
+      <div class="method-toggle">
+        <button type="button" class="${o.paymentMethod==='Бэлэн'?'selected-method':''}" onclick="setPaymentMethod(${o.id},'Бэлэн')">💵 БЭЛЭН</button>
+        <button type="button" class="${o.paymentMethod==='Данс'?'selected-method':''}" onclick="setPaymentMethod(${o.id},'Данс')">🏦 ДАНС</button>
+        <button type="button" class="${o.paymentMethod==='POS'?'selected-method':''}" onclick="setPaymentMethod(${o.id},'POS')">💳 POS</button>
+      </div>
+      ` : `
+      <button type="button" class="pay-later" onclick="showPaymentMethods(${o.id})">💳 ТӨЛБӨР ТӨЛӨХ</button>
+      ${o.showPaymentMethods ? `
+      <div class="method-label">Төлбөрийн төрлөө сонгоно уу</div>
+      <div class="method-toggle">
+        <button type="button" onclick="setPaymentMethod(${o.id},'Бэлэн')">💵 БЭЛЭН</button>
+        <button type="button" onclick="setPaymentMethod(${o.id},'Данс')">🏦 ДАНС</button>
+        <button type="button" onclick="setPaymentMethod(${o.id},'POS')">💳 POS</button>
+      </div>` : ''}
+      `}
+
+      <div class="actions">
+        <button class="del" onclick="removeO(${o.id})">Устгах</button>
+      </div>
+    </div>`
+  ).join("");
+}
+
+function showPaymentMethods(id){
+  const o=orders.find(x=>x.id===id);
+  if(!o) return;
+  o.showPaymentMethods=true;
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  renderOrders();
+}
+function setOrderPayment(id,status){
+  const o=orders.find(x=>x.id===id);
+  if(!o) return;
+  o.paymentStatus=status;
+  if(status!=="Төлсөн") o.paymentMethod="";
+  o.showPaymentMethods=false;
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  renderOrders();
+  renderReport();
+}
+function setPaymentMethod(id,method){
+  const o=orders.find(x=>x.id===id);
+  if(!o) return;
+  o.paymentStatus="Төлсөн";
+  o.paymentMethod=method;
+  o.showPaymentMethods=false;
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  renderOrders();
+  renderReport();
+}
+
+function toggle(id){
+  const o=orders.find(x=>x.id===id);
+  if(o)o.done=!o.done;
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  renderOrders();
+}
+
+// Энэ нь зөвхөн одоогийн захиалгыг устгана.
+// Өнөөдрийн тайлан устахгүй.
+function removeO(id){
+  // Зөвхөн одоогийн захиалгыг жагсаалтаас устгана.
+  // Өнөөдрийн тайлангийн тоо, борлуулалт, хоол тус бүрийн тоо хасагдахгүй.
+  orders=orders.filter(x=>x.id!==id);
+  localStorage.setItem("sf_orders",JSON.stringify(orders));
+  renderOrders();
+  renderReport();
+}
+
+function clearActiveOrders(){
+  if(confirm("Өгөөд дууссан захиалгуудыг жагсаалтаас устгах уу?\n\nӨнөөдрийн тайлангийн тоо, борлуулалт хасагдахгүй.")){
+    orders=[];
+    localStorage.setItem("sf_orders","[]");
+    renderOrders();
+    renderReport();
+  }
+}
+
+orders.forEach(o=>{
+  if(!o.paymentStatus) o.paymentStatus="Төлөөгүй";
+  if(!o.paymentMethod) o.paymentMethod="";
+  if(o.showPaymentMethods===undefined) o.showPaymentMethods=false;
+  if(!o.dateKey) o.dateKey=todayKey();
+});
+localStorage.setItem("sf_orders",JSON.stringify(orders));
+
+renderFoods();
+renderCart();
+renderContainer();
+renderPayment();
+renderReport();
+renderOrders();
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
