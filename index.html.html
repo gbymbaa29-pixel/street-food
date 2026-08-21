@@ -1,1 +1,82 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Street Food">
+<link rel="manifest" href="manifest.json">
+<title>Street Food</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f4f6;color:#111827;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+header{background:#111827;color:#fff;padding:calc(16px + env(safe-area-inset-top)) 16px 16px;position:sticky;top:0;z-index:5}header h1{margin:0;font-size:21px}header small{opacity:.7}
+main{padding:12px;max-width:760px;margin:auto}.card{background:#fff;border-radius:18px;padding:15px;margin-bottom:12px;box-shadow:0 2px 12px #0000000c}
+h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:15px 0 10px}input{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:11px;font-size:16px}
+.foods{display:grid;grid-template-columns:1fr 1fr;gap:9px}.food{border:1px solid #d1d5db;background:#fff;border-radius:12px;padding:8px;text-align:left;min-height:150px;cursor:pointer;display:flex;flex-direction:column;gap:7px;overflow:hidden}.food img{width:100%;height:90px;object-fit:cover;border-radius:9px;background:#f3f4f6}.food.selected{border:2px solid #111827;background:#f3f4f6;transform:scale(.98)}.food b{display:block;font-size:14px;line-height:1.2}.food span{display:block;margin-top:4px;color:#4b5563;font-size:14px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0;border-bottom:1px solid #eee}.row button{border:0;border-radius:7px;padding:5px 10px}.total{display:flex;justify-content:space-between;font-size:21px;font-weight:800;padding:14px 0}.save{width:100%;padding:14px;border:0;border-radius:12px;background:#111827;color:#fff;font-weight:800;font-size:16px}
+.container-row{display:flex;align-items:center;gap:12px;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px}.container-btn{width:38px;height:38px;border:0;border-radius:9px;background:#eef0f3;font-size:22px}.container-row strong{min-width:60px;text-align:center}.container-row span{margin-left:auto;font-weight:700}
+.report-title{display:flex;justify-content:space-between;align-items:center;gap:8px}.date{font-size:13px;color:#6b7280}.report-controls{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:10px 0}.period-btn{border:1px solid #d1d5db;background:#fff;border-radius:9px;padding:9px 4px;font-weight:700}.period-btn.active{background:#111827;color:#fff}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:8px}.stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:11px;font-size:13px}.stat b{display:block;font-size:18px;margin-top:3px}.food-stat{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
+.clear{border:0;background:#eef0f3;border-radius:9px;padding:8px 10px;float:right}.order{border:1px solid #e5e7eb;border-radius:13px;padding:13px;margin-top:10px}.oh{display:flex;justify-content:space-between;gap:8px}.badge{font-size:11px;background:#fff7ed;color:#9a3412;padding:5px 7px;border-radius:20px;white-space:nowrap}.order ul{padding-left:18px}.order li{margin:5px 0}.ot{text-align:right;font-size:18px;font-weight:800;border-top:1px solid #eee;padding-top:9px}.actions{display:flex;gap:7px;margin-top:10px}.actions button{flex:1;border:0;border-radius:9px;padding:10px;font-weight:700}.done{background:#dcfce7;color:#166534}.del{width:100%;border:0;border-radius:9px;padding:10px;font-weight:700;background:#fee2e2;color:#991b1b}.empty{text-align:center;color:#777;padding:25px 5px}
+.pay-later{width:100%;border:0;border-radius:11px;padding:13px;background:#111827;color:#fff;font-weight:800;font-size:15px;margin:10px 0}.payment-paid{margin:10px 0;padding:11px 12px;border-radius:10px;background:#dcfce7;color:#15803d;font-weight:800}.method-label{font-size:13px;font-weight:800;color:#6b7280;margin:8px 0 6px}.method-toggle{display:flex;gap:7px;margin:8px 0 12px}.method-toggle button{flex:1;border:1px solid #d1d5db;background:#fff;border-radius:9px;padding:10px 5px;font-weight:800}.method-toggle .selected-method{background:#111827;color:#fff;border-color:#111827}
+@media(max-width:380px){.foods{grid-template-columns:1fr}.food{min-height:auto}}
+</style>
+</head>
+<body>
+<header><h1>🍗 Street Food</h1><small>Захиалгын систем</small></header>
+<main>
+<section class="card">
+<h2>Шинэ захиалга</h2><input id="customer" placeholder="Захиалагч / утас">
+<h3>Хоол сонгох</h3><div class="foods" id="foods"></div>
+<h3>🥡 Авч явах сав</h3>
+<div class="container-row"><button class="container-btn" onclick="changeContainer(-1)">−</button><strong id="containerQty">0 сав</strong><button class="container-btn" onclick="changeContainer(1)">+</button><span id="containerPrice">0₮</span></div>
+<h3>Сонгосон хоол</h3><div id="cart" class="empty">Хоол сонгоно уу.</div>
+<div class="total"><span>Нийт</span><span id="total">0₮</span></div><button class="save" onclick="saveOrder()">ЗАХИАЛГА ХАДГАЛАХ</button>
+</section>
 
+<section class="card">
+<button class="clear" onclick="clearActiveOrders()">Бүгдийг устгах</button><h2>📋 Одоогийн захиалгууд</h2><div id="orders"></div>
+</section>
+
+<section class="card">
+<div class="report-title"><h2>📊 Өнөөдрийн тайлан</h2><div class="date" id="reportDate"></div></div>
+<div class="report-controls">
+<button class="period-btn active" onclick="showReport('today',this)">Өнөөдөр</button>
+<button class="period-btn" onclick="showReport('yesterday',this)">Өчигдөр</button>
+<button class="period-btn" onclick="showReport('week',this)">7 хоног</button>
+<button class="period-btn" onclick="showReport('month',this)">Энэ сар</button>
+</div>
+<div class="summary"><div class="stat">Нийт захиалга<b id="count">0</b></div><div class="stat">Нийт борлуулалт<b id="sales">0₮</b></div></div>
+<h3>🍴 Хоол тус бүр</h3><div id="foodStats"></div><h3>💳 Төлбөрийн төрөл</h3><div id="methodStats"></div>
+</section>
+</main>
+
+<script>
+const menu=[["Жижиг догбугги",4500,"small_dogbuggi.jpeg"],["Догбугги",7000,"dogbuggi.jpeg"],["Үдэн",3000,"uden.jpeg"],["Шарсан дог",3000,"fried_dog.jpeg"],["Шарсан төмс",4000,"fries.jpeg"],["Наггетс",4000,"nuggets.webp"],["Шарсан төмстэй шаржигнуур тахиа",11000,"fries_chicken.jpeg"],["Чихэрлэг соустай догтой тахиа",13000,"sweet_chicken.jpeg"]];
+let cart={},containerQty=0,orders=JSON.parse(localStorage.getItem("sf_orders")||"[]")||[],reports=JSON.parse(localStorage.getItem("sf_daily_reports")||"{}")||{};
+const CONTAINER_PRICE=500,money=n=>n.toLocaleString("mn-MN")+"₮";
+const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const fmt=d=>d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");
+function todayKey(){return key(new Date())}
+function getTodayReport(){let k=todayKey();if(!reports[k]){reports[k]={orders:0,sales:0,items:{}};menu.forEach((x,i)=>reports[k].items[i]=0);localStorage.setItem("sf_daily_reports",JSON.stringify(reports))}return reports[k]}
+function renderFoods(){const foodBox=document.getElementById("foods");foodBox.innerHTML=menu.map((x,i)=>`<button class="food ${cart[i]?"selected":""}" onclick="add(${i})"><img src="${x[2]}" alt="${x[0]}" onerror="this.style.display='none'"><div><b>${x[0]}</b><span>${money(x[1])}</span></div></button>`).join("")}
+function add(i){cart[i]=(cart[i]||0)+1;renderFoods();renderCart()}
+function change(i,d){cart[i]=(cart[i]||0)+d;if(cart[i]<=0)delete cart[i];renderFoods();renderCart()}
+function changeContainer(d){containerQty=Math.max(0,containerQty+d);containerQtyEl.textContent=containerQty+" сав";containerPrice.textContent=money(containerQty*CONTAINER_PRICE);renderCart()}
+function renderCart(){let ks=Object.keys(cart);cartEl.innerHTML=ks.length?ks.map(i=>`<div class="row"><span>${menu[i][0]} × ${cart[i]}</span><span>${money(menu[i][1]*cart[i])} <button onclick="change(${i},-1)">−</button><button onclick="change(${i},1)">+</button></span></div>`).join(""):'<div class="empty">Хоол сонгоно уу.</div>';total.textContent=money(ks.reduce((s,i)=>s+menu[i][1]*cart[i],0)+containerQty*CONTAINER_PRICE)}
+function saveOrder(){let ks=Object.keys(cart);if(!ks.length)return alert("Хоолоо сонгоно уу.");let items=ks.map(i=>({name:menu[i][0],qty:cart[i],unit:menu[i][1],sub:menu[i][1]*cart[i],menuIndex:+i}));if(containerQty)items.push({name:"Авч явах сав",qty:containerQty,unit:500,sub:containerQty*500,menuIndex:null,isContainer:true});let totalV=items.reduce((s,x)=>s+x.sub,0),o={id:Date.now(),customer:customer.value.trim()||"Захиалагч",items,total:totalV,paymentStatus:"Төлөөгүй",paymentMethod:"",showPaymentMethods:false,time:new Date().toLocaleString("mn-MN"),dateKey:todayKey(),done:false};orders.unshift(o);let r=getTodayReport();r.orders++;r.sales+=totalV;items.forEach(x=>{if(x.menuIndex!=null)r.items[x.menuIndex]=(r.items[x.menuIndex]||0)+x.qty});localStorage.setItem("sf_orders",JSON.stringify(orders));localStorage.setItem("sf_daily_reports",JSON.stringify(reports));cart={};containerQty=0;customer.value="";renderCart();containerQtyEl.textContent="0 сав";containerPrice.textContent="0₮";renderOrders();renderReport()}
+function showReport(period,btn){document.querySelectorAll(".period-btn").forEach(x=>x.classList.remove("active"));if(btn)btn.classList.add("active");let now=new Date();now.setHours(0,0,0,0),start=new Date(now),end=new Date(now);if(period==="yesterday"){start.setDate(start.getDate()-1);end.setDate(end.getDate()-1)}else if(period==="week"){start.setDate(start.getDate()-((start.getDay()+6)%7));end=new Date(start);end.setDate(end.getDate()+6)}else if(period==="month"){start=new Date(now.getFullYear(),now.getMonth(),1);end=new Date(now.getFullYear(),now.getMonth()+1,0)}let a={orders:0,sales:0,items:{},methods:{"Бэлэн":0,"Данс":0,"POS":0}};menu.forEach((x,i)=>a.items[i]=0);for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){let r=reports[key(d)];if(r){a.orders+=r.orders||0;a.sales+=r.sales||0;menu.forEach((x,i)=>a.items[i]+=r.items?.[i]||0)}}orders.forEach(o=>{let od=o.dateKey||"";if(od>=key(start)&&od<=key(end)&&o.paymentStatus==="Төлсөн"&&o.paymentMethod)a.methods[o.paymentMethod]=(a.methods[o.paymentMethod]||0)+(o.total||0)})reportDate.textContent=start.getTime()===end.getTime()?fmt(start):fmt(start)+" – "+fmt(end);count.textContent=a.orders;sales.textContent=money(a.sales);foodStats.innerHTML=menu.map((x,i)=>`<div class="food-stat"><span>${x[0]}</span><b>${a.items[i]||0} ш</b></div>`).join("");methodStats.innerHTML=Object.entries(a.methods).map(([k,v])=>`<div class="food-stat"><span>${k}</span><b>${money(v)}</b></div>`).join("")}
+function renderOrders(){if(!orders.length){ordersEl.innerHTML='<div class="empty">Одоогоор хүлээгдэж байгаа захиалга алга.</div>';return}ordersEl.innerHTML=orders.map((o,n)=>`<div class="order ${o.done?"done":""}"><div class="oh"><b>№${orders.length-n} — ${o.customer}</b><span class="badge">${o.done?"Дууссан":"Хүлээгдэж байна"}</span></div><small>${o.time}</small><ul>${o.items.map(x=>`<li>${x.name} × ${x.qty} — <b>${money(x.sub)}</b></li>`).join("")}</ul><div class="ot">Нийт: ${money(o.total)}</div>${o.paymentStatus==="Төлсөн"?`<div class="payment-paid">✓ Төлсөн — ${o.paymentMethod||"төрөл сонгоогүй"}</div><div class="method-label">Төлбөрийн төрөл</div><div class="method-toggle"><button class="${o.paymentMethod==="Бэлэн"?"selected-method":""}" onclick="setPaymentMethod(${o.id},'Бэлэн')">💵 БЭЛЭН</button><button class="${o.paymentMethod==="Данс"?"selected-method":""}" onclick="setPaymentMethod(${o.id},'Данс')">🏦 ДАНС</button><button class="${o.paymentMethod==="POS"?"selected-method":""}" onclick="setPaymentMethod(${o.id},'POS')">💳 POS</button></div>`:`<button class="pay-later" onclick="showPaymentMethods(${o.id})">💳 ТӨЛБӨР ТӨЛӨХ</button>${o.showPaymentMethods?`<div class="method-label">Төлбөрийн төрлөө сонгоно уу</div><div class="method-toggle"><button onclick="setPaymentMethod(${o.id},'Бэлэн')">💵 БЭЛЭН</button><button onclick="setPaymentMethod(${o.id},'Данс')">🏦 ДАНС</button><button onclick="setPaymentMethod(${o.id},'POS')">💳 POS</button></div>`:""}`}<div class="actions"><button class="done" onclick="toggleDone(${o.id})">${o.done?"↩ ДУУСААГҮЙ":"✓ ДУУССАН"}</button><button class="del" onclick="removeO(${o.id})">Устгах</button></div></div>`).join("")}
+function showPaymentMethods(id){let o=orders.find(x=>x.id===id);if(!o)return;o.showPaymentMethods=true;localStorage.setItem("sf_orders",JSON.stringify(orders));renderOrders()}
+function setPaymentMethod(id,m){let o=orders.find(x=>x.id===id);if(!o)return;o.paymentStatus="Төлсөн";o.paymentMethod=m;o.showPaymentMethods=false;localStorage.setItem("sf_orders",JSON.stringify(orders));renderOrders()}
+function toggleDone(id){let o=orders.find(x=>x.id===id);if(!o)return;o.done=!o.done;localStorage.setItem("sf_orders",JSON.stringify(orders));renderOrders()}
+function removeO(id){orders=orders.filter(x=>x.id!==id);localStorage.setItem("sf_orders",JSON.stringify(orders));renderOrders()}
+function clearActiveOrders(){if(confirm("Захиалгуудыг жагсаалтаас устгах уу?\n\nӨнөөдрийн тайлан хасагдахгүй.")){orders=[];localStorage.setItem("sf_orders","[]");renderOrders()}}
+const methodStats=document.getElementById("methodStats"),customerEl=document.getElementById("customer"),cartEl=document.getElementById("cart"),total=document.getElementById("total"),ordersEl=document.getElementById("orders"),containerQtyEl=document.getElementById("containerQty"),containerPrice=document.getElementById("containerPrice");
+renderFoods();renderCart();renderOrders();showReport("today",document.querySelector(".period-btn.active"));
+if("serviceWorker"in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+</body>
+</html>
